@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import zmail
 import numpy as np
-import traceback
+
 
 
 def send_email(my_subject, my_content):

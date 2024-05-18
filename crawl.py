@@ -250,5 +250,5 @@ if __name__ == '__main__':
                     time.sleep(60)
         except Exception as e:
             print(e)
-            time_sleep_error = random.random() * (random.randint(50,60))
+            time_sleep_error = random.random() * (random.randint(50, 60))
             time.sleep(time_sleep_error)

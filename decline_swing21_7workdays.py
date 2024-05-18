@@ -55,8 +55,7 @@ def decline_7workday(now_time):  # 观测有一只币种在跌且振幅大于21%
             decline_coin_name.append(cur_coin_name_in_common)
     # 提取起始日期的详细数据，找出最大值、最小值计算振幅是是否超过21
     start_day_detail_data = pd.read_csv(data_path_all_day, low_memory=False, parse_dates=['时间'], index_col='时间',
-                                        usecols=['时间', 'USDT价格', '币种']).loc[
-                            start_day_time: start_day_time + timedelta(hours=24)]
+                                        usecols=['时间', 'USDT价格', '币种']).loc[start_day_time: start_day_time + timedelta(hours=24)]
     swing_than_21_coin_name = []
     for cur_decline_coin_name_in_decline in decline_coin_name:
         try:
