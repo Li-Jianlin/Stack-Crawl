@@ -35,6 +35,7 @@ def decline_and_curprice_lessthan_pre_30days_max_55percent(now_time):
                                   parse_dates=['时间'], date_format='%Y-%m-%d %H:%M').loc[start_day_time:now_time]
         print(data_32days)
         print(data_32days.info())
+        data_32days.dropna(inplace=True)
     except Exception as message_error:
         if os.path.exists(errors_file_path):
             with open(errors_file_path, mode='a', encoding='utf-8') as file_writer:

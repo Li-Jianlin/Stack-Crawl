@@ -32,9 +32,10 @@ def decline_7workday(now_time):  # 观测有一只币种在跌且振幅大于21%
     # 提取出起始日期到当前时间的数据
     data_00_hour_all = pd.read_csv(data_path_00hour, index_col='时间', usecols=['时间', '币种', 'USDT价格'],
                                    low_memory=False, parse_dates=['时间']).loc[start_day_time:]
-    print(data_00_hour_all)
-    print(data_00_hour_all.info())
-
+    # print(data_00_hour_all)
+    # print(data_00_hour_all.info())
+    # 删除掉有nan的行
+    data_00_hour_all.dropna(inplace=True)
     # 判断天数是否足够
     unique_data_count = data_00_hour_all.index._data
     count_unique_datas = len(np.unique(unique_data_count))

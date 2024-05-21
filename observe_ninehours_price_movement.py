@@ -34,6 +34,7 @@ def observe_price_movement(now_time):
                                             ).loc[start_time:all_hours_time_datetime[9]]
         # print(data_df_all_ten_hours.info())
         # print(data_df_all_ten_hours)
+        data_df_all_ten_hours.dropna(inplace=True)
         unique_data_count = data_df_all_ten_hours.index._data
         # print(unique_data_count)
         count_unique_datas = len(np.unique(unique_data_count))
