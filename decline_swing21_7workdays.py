@@ -1,17 +1,6 @@
 import pandas as pd
 from datetime import datetime, timedelta
-import numpy as np
-import zmail
-import os
-
-
-def send_email(my_subject, my_content):
-    msg = {
-        'subject': my_subject,
-        'content_text': my_content
-    }
-    server = zmail.server('2285687467@qq.com', 'wzekzueiuxpndida')
-    server.send_mail('2285687467@qq.com', msg)
+from send_email import send_email
 
 
 def decline_7workday(area):  # 观测有一只币种在跌且振幅大于21%时，后面7日内有无在跌且当天起始价格小于观测日期起始价格的95%

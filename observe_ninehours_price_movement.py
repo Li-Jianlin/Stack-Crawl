@@ -1,18 +1,6 @@
-import os
-import time
-import numpy as np
-import zmail
 import pandas as pd
-from datetime import datetime, timedelta
+from send_email import send_email
 epslion = 1e-8
-
-def send_email(my_subject, my_content):
-    msg = {
-        'subject': my_subject,
-        'content_text': my_content
-    }
-    server = zmail.server('2285687467@qq.com', 'wzekzueiuxpndida')
-    server.send_mail('2285687467@qq.com', msg)
 
 
 def observe_price_movement(area):

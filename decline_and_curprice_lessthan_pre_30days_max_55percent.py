@@ -1,18 +1,5 @@
-import os.path
 import pandas as pd
-from datetime import datetime, timedelta
-import zmail
-import numpy as np
-
-
-def send_email(my_subject, my_content):
-    msg = {
-        'subject': my_subject,
-        'content_text': my_content
-    }
-    server = zmail.server('2285687467@qq.com', 'wzekzueiuxpndida')
-    server.send_mail('2285687467@qq.com', msg)
-
+from send_email import send_email
 
 def decline_and_curprice_lessthan_pre_30days_max_55percent(area):
     if area == 'cn':
