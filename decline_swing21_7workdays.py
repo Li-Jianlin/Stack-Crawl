@@ -14,7 +14,13 @@ def decline_7workday(area):  # 观测有一只币种在跌且振幅大于21%时�
     # 提取每天0点数据
     all_day_data = pd.read_csv(file_path_cur_day, low_memory=False, index_col='时间', usecols=['币种', 'USDT价格', '时间', '每天跌涨幅'])
     # 判断数据是否充足
-    unique_index = all_day_data.index.unique().tolist()
+    all_day_data.index = pd.to_datetime(all_day_data.index)
+    unique_index = all_day_data.index.unique().sort_values()
+    time_diff = unique_index.to_series().diff().dropna()
+    all_diff_is_day = all(time_diff == pd.Timedelta(days=1))
+    if not all_diff_is_day:
+        print('缺少某一天数据')
+        return
     if len(unique_index) < 8:
         print('数据不足')
         return

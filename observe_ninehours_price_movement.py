@@ -12,7 +12,14 @@ def observe_price_movement(area):
     data_all_ten_hours = pd.read_csv(file_path_hour_amplitude_data, low_memory=False, index_col='时间',usecols=['币种','USDT价格','时间','每小时跌涨幅'])
     # print(data_all_ten_hours)
     # 提取标签
-    unique_index = data_all_ten_hours.index.unique().tolist()
+    data_all_ten_hours.index = pd.to_datetime(data_all_ten_hours.index)
+    unique_index = data_all_ten_hours.index.unique().sort_values()
+    # print(unique_index)
+    time_diff = unique_index.to_series().diff().dropna()
+    all_diff_is_hour = all(time_diff == pd.Timedelta(hours=1))
+    if not all_diff_is_hour:
+        print('缺少某小时数据')
+        return
     # print('unique_index:',unique_index)
     if len(unique_index) < 10:
         print('数据不足')

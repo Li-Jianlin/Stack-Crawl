@@ -9,9 +9,17 @@ def decline_and_curprice_lessthan_pre_30days_max_55percent(area):
     send_message = ['币种\t\t观测时间\t\t价格最大时间\n']
     # 提取数据
     data_all_day = pd.read_csv(file_path_everyday_data,low_memory=False, index_col='时间',usecols=['币种','USDT价格','时间','每天跌涨幅'])
-    # print(data_all_day)
-    unique_index = data_all_day.index.unique().tolist()
-    print(len(unique_index))
+    # 检查是否有缺失的日期
+    data_all_day.index = pd.to_datetime(data_all_day.index)
+    # print(data_all_day.index[0])
+    unique_index = data_all_day.index.unique().sort_values()
+    # print(type(unique_index[0]))
+    time_diff = unique_index.to_series().diff().dropna()
+    all_diff_is_day = all(time_diff == pd.Timedelta(days= 1))
+    # print(all_diff_ont_day)
+    if not all_diff_is_day:
+        print('缺少某一天数据')
+        return
     if len(unique_index) < 31:
         print('数据不足')
         return
