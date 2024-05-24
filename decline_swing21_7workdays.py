@@ -1,6 +1,6 @@
 import pandas as pd
 from datetime import datetime, timedelta
-from send_email import send_email
+from send_email import send_email_test
 
 
 def decline_7workday(area):  # 观测有一只币种在跌且振幅大于21%时，后面7日内有无在跌且当天起始价格小于观测日期起始价格的95%
@@ -61,7 +61,7 @@ def decline_7workday(area):  # 观测有一只币种在跌且振幅大于21%时�
     if len(send_message) != 1:
         print(send_message)
         subject = "振幅超过21%，7个工作日内在跌币种价格小于起始日的95%"
-        send_email(my_subject=subject, my_content=send_message)
+        send_email_test(my_subject=subject, my_content=send_message)
 
 
 if __name__ == '__main__':

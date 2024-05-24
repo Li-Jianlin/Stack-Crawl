@@ -1,6 +1,6 @@
 import pandas as pd
-from send_email import send_email
-epslion = 1e-8
+from send_email import send_email_test
+epslion = 1e-5
 
 
 def observe_price_movement(area):
@@ -22,7 +22,7 @@ def observe_price_movement(area):
         return
     # print('unique_index:',unique_index)
     if len(unique_index) < 10:
-        print('数据不足')
+        print('数据不足10小时')
         return
     # 找出起始天日期
     start_time = unique_index[-10]
@@ -65,11 +65,10 @@ def observe_price_movement(area):
                             break
                 except Exception as e:
                     print(e)
-
     if len(send_message) != 1:
         subject = "股票增幅超过4.5%时，后面九小时有跌幅超过-3.5%--李建林"
         print(send_message)
-        send_email(my_subject=subject, my_content=send_message)
+        send_email_test(my_subject=subject, my_content=send_message)
 
 
 if __name__ == "__main__":

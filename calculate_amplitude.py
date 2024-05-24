@@ -1,6 +1,6 @@
 import os.path
 import pandas as pd
-epsilon = 1e-10
+epsilon = 1e-5
 
 def calculate_every_hour_amplitude(area):
     if area == 'cn':
@@ -10,9 +10,17 @@ def calculate_every_hour_amplitude(area):
         file_path_read = r'.\美国每小时整点数据.csv'
         file_path_write = r'.\美国每小时跌涨幅.csv'
     df_hours_data = pd.read_csv(file_path_read,index_col='时间',low_memory=False,usecols=['时间','USDT价格','币种'])
-    unique_index = df_hours_data.index.unique().tolist()
+    # unique_index = df_hours_data.index.unique().tolist()
+    df_hours_data.index = pd.to_datetime(df_hours_data.index)
+    unique_index = df_hours_data.index.unique().sort_values()
+    # print(unique_index)
+    time_diff = unique_index.to_series().diff().dropna()
+    all_diff_is_hour = all(time_diff == pd.Timedelta(hours=1))
+    if not all_diff_is_hour:
+        print('缺少某小时数据')
+        return
     if len(unique_index) <= 1:
-        print('数据不足')
+        print('数据不足2小时')
         return
     # 处理缺失值
     df_hours_data.dropna(inplace=True)
@@ -25,13 +33,15 @@ def calculate_every_hour_amplitude(area):
     common_coin_name = coin_name_in_pre[coin_name_in_pre.isin(coin_name_in_cur)]
     data = {
         '币种':[],
-        '每小时跌涨幅':[],
-        'USDT价格':[],
-        '时间':[]
+        '每小时跌涨幅': [],
+        'USDT价格': [],
+        '时间': []
     }
     for coin_name in common_coin_name:
         pre_price = last_two_hours_data.loc[pre_time_index][last_two_hours_data.loc[pre_time_index]['币种'] == coin_name]['USDT价格'].values[0]
         cur_price = last_two_hours_data.loc[cur_time_index][last_two_hours_data.loc[cur_time_index]['币种'] == coin_name]['USDT价格'].values[0]
+        if pre_price < epsilon:
+            pre_price = float('inf')
         percent = (cur_price - pre_price)/pre_price * 100
         data['币种'].append(coin_name)
         data['每小时跌涨幅'].append(percent)
@@ -50,10 +60,18 @@ def calculate_everyday_amplitude(area):
     else:
         file_path_read = r'.\美国每天整点数据.csv'
         file_path_write = r'.\美国每天跌涨幅.csv'
-    df_days_data = pd.read_csv(file_path_read,index_col='时间',low_memory=False,usecols=['时间','USDT价格','币种'])
-    unique_index = df_days_data.index.unique().tolist()
+    df_days_data = pd.read_csv(file_path_read,index_col='时间',low_memory=False,usecols=['时间', 'USDT价格', '币种'])
+    # unique_index = df_days_data.index.unique().tolist()
+    df_days_data.index = pd.to_datetime(df_days_data.index)
+    unique_index = df_days_data.index.unique().sort_values()
+    # print(unique_index)
+    time_diff = unique_index.to_series().diff().dropna()
+    all_diff_is_hour = all(time_diff == pd.Timedelta(days=1))
+    if not all_diff_is_hour:
+        print('缺少某天数据')
+        return
     if len(unique_index) <= 1:
-        print('数据不足')
+        print('数据不足2天')
         return
     # 处理缺失值
     df_days_data.dropna(inplace=True)

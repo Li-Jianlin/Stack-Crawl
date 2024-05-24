@@ -15,36 +15,32 @@ import calculate_amplitude
 if __name__ == "__main__":
     file_path_crawl_error = r'.\爬取异常.csv'
     amount = int(input('你要爬取多少种货币数据？'))
-    amount_9hours = 0
-    amount_30days = 0
-    amount_7workdays = 0
     use_crawl_url1 = True
     crawl_amount_url2 = 0
     while True:
-        try:
-            time_now_minutes = time.strftime('%M')
-            time_hour = time.strftime('%H')
-            df_combined = pd.DataFrame()
-            time_str_cn = time.strftime('%Y-%m-%d %H:%M')
-            if int(time_now_minutes) % 5 == 0:
+        time_now_minutes = time.strftime('%M')
+        time_hour = time.strftime('%H')
+        df_combined = pd.DataFrame()
+        if int(time_now_minutes) % 5 == 0:
+            try:
+                if use_crawl_url1:
+                    print("开始爬取")
+                    time_str_cn = time.strftime('%Y-%m-%d %H:%M')
+                    time_date_cn = datetime.datetime.strptime(time_str_cn, '%Y-%m-%d %H:%M')
+                    print(time_date_cn)
+                    page = math.ceil(amount / 20)
+                    for index in range(1, page + 1):
+                        print(f"爬取第{index}页")
+                        content = crawl.get_data_01(index)
+                        data_dict = crawl.data_parse_01(content, time_date_cn)
+                        df_data = pd.DataFrame(data_dict)
+                        df_combined = pd.concat([df_combined, df_data], ignore_index=True)
+                else:
+                    raise Exception('弃用网址1，使用网址2')
+            except Exception as e:
                 try:
-                    if use_crawl_url1:
-                        print("开始爬取")
-                        time_str_cn = time.strftime('%Y-%m-%d %H:%M')
-                        time_date_cn = datetime.datetime.strptime(time_str_cn, '%Y-%m-%d %H:%M')
-                        print(time_date_cn)
-                        time_date_us = time_date_cn - datetime.timedelta(hours=12)
-                        page = math.ceil(amount / 20)
-                        for index in range(1, page + 1):
-                            print(f"爬取第{index}页")
-                            content = crawl.get_data_01(index)
-                            data_dict = crawl.data_parse_01(content, time_date_cn)
-                            df_data = pd.DataFrame(data_dict)
-                            df_combined = pd.concat([df_combined, df_data], ignore_index=True)
-                    else:
-                        raise Exception('弃用网址1，使用网址2')
-                except Exception as e:
                     df_combined.drop(df_combined.index, inplace=True)  # 清空之前的数据
+                    df_combined.dropna(inplace=True)
                     use_crawl_url1 = False
                     crawl_amount_url2 += 1
                     print(e)
@@ -52,11 +48,19 @@ if __name__ == "__main__":
                         use_crawl_url1 = True
                         crawl_amount_url2 = 0
                     page = math.ceil(amount / 50)
+                    print('开始爬取',time_date_cn)
+                    time_str_cn = time.strftime('%Y-%m-%d %H:%M')
+                    time_date_cn = datetime.datetime.strptime(time_str_cn, '%Y-%m-%d %H:%M')
                     for index in range(1, page + 1):
                         print(f"正在爬取第{index}页")
                         data_json = crawl.get_data_02(index)
                         df_data = crawl.data_parse_02(data_json, time_date_cn)
                         df_combined = pd.concat([df_combined, df_data], ignore_index=True)
+                except Exception as e:
+                    print('备用网站爬取失败',time.strftime("%Y-%m-%d %H:%M"))
+                    use_crawl_url1 = True
+                    continue
+            try:
                 # 写入每5分钟数据
                 write_to_file.oneday_all_data_to_csv_cn(df_combined)
                 write_to_file.oneday_all_data_to_csv_us(df_combined)
@@ -84,6 +88,8 @@ if __name__ == "__main__":
                 while int(time.strftime('%M')) % 5 == 0:
                     print('休眠60秒')
                     time.sleep(60)
-        except Exception as e:
-            print(e)
-            time.sleep(60)
+            except Exception as e:
+                print(e)
+                time.sleep(60)
+
+

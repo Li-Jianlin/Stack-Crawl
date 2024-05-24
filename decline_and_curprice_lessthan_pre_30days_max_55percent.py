@@ -1,5 +1,5 @@
 import pandas as pd
-from send_email import send_email
+from send_email import send_email_test
 
 def decline_and_curprice_lessthan_pre_30days_max_55percent(area):
     if area == 'cn':
@@ -50,7 +50,7 @@ def decline_and_curprice_lessthan_pre_30days_max_55percent(area):
             continue
     if len(send_message) != 1:
         subject = "某个币种和近30天最高价格的比值 --李建林"
-        send_email(my_subject=subject, my_content=send_message)
+        send_email_test(my_subject=subject, my_content=send_message)
 
 
 if __name__ == "__main__":
