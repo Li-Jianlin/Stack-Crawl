@@ -114,6 +114,7 @@ def data_parse_01(content, time_date_cn):  # 对网站一爬取的数据进行�
         '流通供应量': circulating_supply,
         '时间': time_date_cn
     }
+
     return data_dict
 
 
@@ -135,6 +136,7 @@ def data_parse_02(data_json, time_date_cn):  # 对网站2爬取的数据进行�
         data_dict["流通供应量"].append(record["totalSupply"])
         data_dict["市值"].append(record["marketCap"])
     df_data = pd.DataFrame(data_dict)
+    df_data['时间'] = pd.to_datetime(df_data['时间'])
     return df_data
 
 

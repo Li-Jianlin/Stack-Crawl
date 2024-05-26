@@ -34,6 +34,7 @@ if __name__ == "__main__":
                         content = crawl.get_data_01(index)
                         data_dict = crawl.data_parse_01(content, time_date_cn)
                         df_data = pd.DataFrame(data_dict)
+                        df_data['时间'] = pd.to_datetime(df_data['时间'])
                         df_combined = pd.concat([df_combined, df_data], ignore_index=True)
                 else:
                     raise Exception('弃用网址1，使用网址2')

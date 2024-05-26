@@ -1,6 +1,6 @@
 import pandas as pd
 from send_email import send_email_test
-
+from calculate_amplitude import parse_time
 def decline_and_curprice_lessthan_pre_30days_max_55percent(area):
     if area == 'cn':
         file_path_everyday_data = r'.\中国每天跌涨幅.csv'
@@ -8,21 +8,30 @@ def decline_and_curprice_lessthan_pre_30days_max_55percent(area):
         file_path_everyday_data = r'.\美国每天跌涨幅.csv'
     send_message = ['币种\t\t观测时间\t\t价格最大时间\n']
     # 提取数据
-    data_all_day = pd.read_csv(file_path_everyday_data,low_memory=False, index_col='时间',usecols=['币种','USDT价格','时间','每天跌涨幅'])
+    data_all_day = pd.read_csv(file_path_everyday_data,low_memory=False, usecols=['币种','USDT价格','时间','每天跌涨幅'])
+
+    # 解析时间
+    data_all_day['时间'] = data_all_day['时间'].apply(parse_time)
+
     # 检查是否有缺失的日期
-    data_all_day.index = pd.to_datetime(data_all_day.index)
-    # print(data_all_day.index[0])
-    unique_index = data_all_day.index.unique().sort_values()
-    # print(type(unique_index[0]))
-    time_diff = unique_index.to_series().diff().dropna()
-    all_diff_is_day = all(time_diff == pd.Timedelta(days= 1))
-    # print(all_diff_ont_day)
-    if not all_diff_is_day:
-        print('缺少某一天数据')
+    if len(data_all_day['时间'].unique()) < 31:
+        print('数据不足31天')
         return
-    if len(unique_index) < 31:
-        print('数据不足')
-        return
+    data_all_day.set_index(['时间','币种'],inplace=True)
+    # 币种
+    unique_coin = data_all_day.index.get_level_values('币种').unique()
+
+    # 时间
+    unique_time = data_all_day.index.get_level_values('时间').unique()
+    complete_time_index = pd.date_range(start=unique_time[-31],end=unique_time[-1],freq='d')
+    multi_index = pd.MultiIndex.from_product([complete_time_index,unique_coin],names=['时间','币种'])
+    data_all_day = data_all_day.reindex(multi_index).sort_index()
+    data_all_day.ffill(inplace=True)
+
+    data_all_day.reset_index(inplace=True)
+    data_all_day.set_index('时间',inplace=True)
+    unique_index = data_all_day.index.unique()
+
     # 找出在跌的币种
     cur_time = unique_index[-1]
     start_time = unique_index[-31]
